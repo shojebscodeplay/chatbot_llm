@@ -4,15 +4,15 @@ import streamlit as st
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import PromptTemplate  # or: from langchain.prompts import PromptTemplate if needed
+from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFaceEndpoint
 from dotenv import load_dotenv, find_dotenv
 
 # Load environment variables
 load_dotenv(find_dotenv())
 
-# Path to the FAISS vector store (update as necessary)
-DB_FAISS_PATH = r"C:\Users\Dell\Desktop\chatbot_llm\vector_store\db_faiss"
+# Path to the FAISS vector store (using a relative path)
+DB_FAISS_PATH = os.path.join("vector_store", "db_faiss")
 
 @st.cache_resource
 def get_vectorstore():
@@ -24,7 +24,6 @@ def set_custom_prompt(custom_prompt_template):
     return PromptTemplate(template=custom_prompt_template, input_variables=["context", "question"])
 
 def load_llm(huggingface_repo_id, HF_TOKEN):
-    # Pass token, max_length, and do_sample directly as parameters.
     llm = HuggingFaceEndpoint(
         repo_id=huggingface_repo_id,
         temperature=0.5,
@@ -70,7 +69,6 @@ Question: {question}
 
 Begin your response now.
 """
-
 
         HUGGINGFACE_REPO_ID = "mistralai/Mistral-7B-Instruct-v0.3"
         HF_TOKEN = os.environ.get("HF_TOKEN")
