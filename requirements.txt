@@ -6,3 +6,4 @@ langchain-core==0.0.3
 python-dotenv==1.0.0
 sentence-transformers==2.2.0
 faiss-cpu==1.7.2  # or faiss-gpu if you are using a GPU
+gunicorn
