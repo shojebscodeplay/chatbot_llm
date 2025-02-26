@@ -47,7 +47,7 @@ def set_custom_prompt(custom_prompt_template):
     return prompt
 
 # Load FAISS vector store
-DB_FAISS_PATH = r"C:\Users\Dell\Desktop\chatbot_llm\vector_store\db_faiss"
+DB_FAISS_PATH = os.path.join("vector_store", "db_faiss")
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 db = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
 

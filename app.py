@@ -57,7 +57,7 @@ def load_llm():
         repo_id="mistralai/Mistral-7B-Instruct-v0.3",
         temperature=0.5,
         token=HF_TOKEN,
-        max_length=512,
+        max_length=256,
         do_sample=False
     )
 
