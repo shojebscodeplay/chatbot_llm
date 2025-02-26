@@ -1,6 +1,5 @@
 import os
 import streamlit as st
-
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
@@ -26,9 +25,9 @@ def set_custom_prompt(custom_prompt_template):
 def load_llm(huggingface_repo_id, HF_TOKEN):
     llm = HuggingFaceEndpoint(
         repo_id=huggingface_repo_id,
-        temperature=0.5,
+        temperature=0.6,
         token=HF_TOKEN,
-        max_length=512,
+        max_length=256,
         do_sample=False
     )
     return llm

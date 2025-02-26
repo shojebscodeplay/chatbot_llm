@@ -24,9 +24,10 @@ def get_vectorstore():
     embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
     try:
         db = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
+        print("✅ Vector database accessed successfully!")
         return db
     except Exception as e:
-        print("Error loading vector store:", e)
+        print("❌ Error loading vector store:", e)
         return None
 
 # Set custom prompt template
@@ -51,11 +52,12 @@ Begin your response now.
 def load_llm():
     HF_TOKEN = os.getenv("HF_TOKEN")
     if not HF_TOKEN:
-        raise ValueError("HF_TOKEN is not set in your environment.")
+        raise ValueError("❌ HF_TOKEN is not set in your environment.")
     
+    print("✅ HF Token accessed successfully!")
     return HuggingFaceEndpoint(
         repo_id="mistralai/Mistral-7B-Instruct-v0.3",
-        temperature=0.5,
+        temperature=0.6,
         token=HF_TOKEN,
         max_length=256,
         do_sample=False
@@ -74,7 +76,6 @@ def chat():
         vectorstore = get_vectorstore()
         if vectorstore is None:
             return jsonify({"error": "Failed to load the vector store"}), 500
-        print("Vector store loaded successfully.")
 
         qa_chain = RetrievalQA.from_chain_type(
             llm=load_llm(),
@@ -91,7 +92,7 @@ def chat():
         return jsonify({"response": result})
 
     except Exception as e:
-        print("Error during QA chain:", str(e))
+        print("❌ Error during QA chain:", str(e))
         return jsonify({"error": str(e)}), 500
 
 # Serve index.html from the public folder for the root URL
@@ -100,6 +101,8 @@ def index():
     return send_from_directory(app.static_folder, "index.html")
 
 if __name__ == "__main__":
-    # Run the app on port 5000 in debug mode
+    print("🚀 Starting the Chatbot Server...")
+    load_llm()  # Ensure HF Token is accessed before running
+    get_vectorstore()  # Ensure vector store is loaded before running
+    print("✅ System initialized successfully! Running on port 5000.")
     app.run(debug=True, port=5000)
-
