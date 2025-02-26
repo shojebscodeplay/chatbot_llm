@@ -19,20 +19,16 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Use an absolute path for the FAISS vector store
 DB_FAISS_PATH = os.path.join("vector_store", "db_faiss")
 
-# Global variables to hold the model and vector store
-llm = None
-vectorstore = None
-
 # Load the FAISS vector store
 def get_vectorstore():
-    global vectorstore  # Use the global variable
     embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
     try:
-        vectorstore = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
+        db = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
         print("✅ Vector database accessed successfully!")
+        return db
     except Exception as e:
         print("❌ Error loading vector store:", e)
-        vectorstore = None
+        return None
 
 # Set custom prompt template
 def set_custom_prompt():
@@ -54,13 +50,12 @@ Begin your response now.
 
 # Load Hugging Face LLM
 def load_llm():
-    global llm  # Use the global variable
     HF_TOKEN = os.getenv("HF_TOKEN")
     if not HF_TOKEN:
         raise ValueError("❌ HF_TOKEN is not set in your environment.")
     
     print("✅ HF Token accessed successfully!")
-    llm = HuggingFaceEndpoint(
+    return HuggingFaceEndpoint(
         repo_id="mistralai/Mistral-7B-Instruct-v0.3",
         temperature=0.6,
         token=HF_TOKEN,
@@ -78,11 +73,12 @@ def chat():
         return jsonify({"error": "No message provided"}), 400
 
     try:
+        vectorstore = get_vectorstore()
         if vectorstore is None:
             return jsonify({"error": "Failed to load the vector store"}), 500
 
         qa_chain = RetrievalQA.from_chain_type(
-            llm=llm,  # Use the preloaded model
+            llm=load_llm(),
             chain_type="stuff",
             retriever=vectorstore.as_retriever(search_kwargs={'k': 3}),
             return_source_documents=False,
