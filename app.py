@@ -104,5 +104,7 @@ if __name__ == "__main__":
     print("🚀 Starting the Chatbot Server...")
     load_llm()  # Ensure HF Token is accessed before running
     get_vectorstore()  # Ensure vector store is loaded before running
-    print("✅ System initialized successfully! Running on port 5000.")
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Get PORT from environment (Render assigns it)
+    print(f"✅ System initialized successfully! Running on port {port}.")
+    app.run(host="0.0.0.0", port=port, debug=True)
+
