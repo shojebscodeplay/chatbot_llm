@@ -1,67 +1,54 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const chatForm = document.getElementById("chat-form");
-    const userInput = document.getElementById("user-input");
-    const chatBox = document.getElementById("chat-box");
-    const loader = document.getElementById("loader");  // Loading spinner element
+document.addEventListener("DOMContentLoaded", () => {
+  const chatBox = document.getElementById("chat-box");
+  const chatForm = document.getElementById("chat-form");
+  const userInput = document.getElementById("user-input");
 
-    // Show loading spinner
-    function showLoading() {
-        loader.style.display = 'block';
+  // Function to append messages to chat box
+  function appendMessage(sender, message) {
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", sender);
+
+    const textDiv = document.createElement("div");
+    textDiv.classList.add("text");
+    textDiv.textContent = message;
+
+    messageDiv.appendChild(textDiv);
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Function to send a message to the Flask backend
+  async function sendMessage(message) {
+    appendMessage("user", message);
+
+    try {
+      const response = await fetch("https://shojebthings-chatbot.onrender.com/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        appendMessage("assistant", data.response);
+      } else {
+        appendMessage("assistant", `Error: ${data.error}`);
+      }
+    } catch (error) {
+      appendMessage("assistant", `Error: ${error.message}`);
     }
+  }
 
-    // Hide loading spinner
-    function hideLoading() {
-        loader.style.display = 'none';
+  // Handle form submission
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const message = userInput.value.trim();
+    if (message) {
+      sendMessage(message);
+      userInput.value = "";
     }
-
-    // Append user and bot messages
-    function appendMessage(sender, message) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add(sender);
-        messageDiv.innerText = message;
-        chatBox.appendChild(messageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the latest message
-    }
-
-    // Send the user input to the server
-    async function sendMessage(message) {
-        try {
-            showLoading();
-            const response = await fetch("https://chatbot-llm-qldo.onrender.com/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ message: message }),
-            });
-
-            hideLoading();
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch response from the server");
-            }
-
-            const data = await response.json();
-            if (data.response) {
-                appendMessage("bot", data.response);
-            } else {
-                appendMessage("bot", "Sorry, I didn't get that.");
-            }
-        } catch (error) {
-            hideLoading();
-            appendMessage("bot", "Error: Unable to get a response. Please try again later.");
-            console.error("Error:", error);
-        }
-    }
-
-    // Handle form submission
-    chatForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const message = userInput.value.trim();
-        if (message) {
-            appendMessage("user", message);
-            userInput.value = "";  // Clear the input field
-            sendMessage(message);
-        }
-    });
+  });
 });
