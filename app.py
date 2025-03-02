@@ -56,7 +56,7 @@ def load_llm():
     
     print("✅ HF Token accessed successfully!")
     return HuggingFaceEndpoint(
-        repo_id="mistralai/Mistral-7B-Instruct-v0.3",
+        repo_id="mistralai/Mistral-7B-Instruct-v0.1",  # Use Mistral-7B-Instruct-v0.1 model
         temperature=0.6,
         token=HF_TOKEN,
         max_length=256,
@@ -107,4 +107,3 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Get PORT from environment (Render assigns it)
     print(f"✅ System initialized successfully! Running on port {port}.")
     app.run(host="0.0.0.0", port=port, debug=True)
-
