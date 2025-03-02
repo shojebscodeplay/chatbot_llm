@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv, find_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
@@ -56,7 +56,7 @@ def load_llm():
     
     print("✅ HF Token accessed successfully!")
     return HuggingFaceEndpoint(
-        repo_id="mistralai/Mistral-7B-Instruct-v0.1",  # Use Mistral-7B-Instruct-v0.1 model
+        repo_id="mistralai/Mistral-7B-Instruct-v0.3",
         temperature=0.6,
         token=HF_TOKEN,
         max_length=256,
@@ -104,6 +104,5 @@ if __name__ == "__main__":
     print("🚀 Starting the Chatbot Server...")
     load_llm()  # Ensure HF Token is accessed before running
     get_vectorstore()  # Ensure vector store is loaded before running
-    port = int(os.environ.get("PORT", 5000))  # Get PORT from environment (Render assigns it)
-    print(f"✅ System initialized successfully! Running on port {port}.")
-    app.run(host="0.0.0.0", port=port, debug=True)
+    print("✅ System initialized successfully! Running on port 5000.")
+    app.run(debug=True, port=5000)
