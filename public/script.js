@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     appendMessage("user", message);
 
     try {
-      const response = await fetch("https://shojebthings-chatbot.onrender.com/chat", {
+      const response = await fetch("https://chatbot-llm-qldo.onrender.com/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
