@@ -11,12 +11,18 @@
     <header>
       <h1>SHOJEBthings Chatbot</h1>
     </header>
+    
+    <!-- Chat Box -->
     <div id="chat-box" class="chat-box"></div>
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off" required>
-      <button type="submit">Send</button>
+
+    <!-- Chat Form -->
+    <form id="chat-form" aria-labelledby="chat-form-label">
+      <label id="chat-form-label" for="user-input" class="sr-only">Type your message</label>
+      <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off" required aria-describedby="chat-form-label">
+      <button type="submit" aria-label="Send message">Send</button>
     </form>
   </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
