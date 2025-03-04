@@ -21,7 +21,7 @@ DB_FAISS_PATH = os.path.join("vector_store", "db_faiss")
 
 # Load the FAISS vector store
 def get_vectorstore():
-    embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+    embedding_model = HuggingFaceEmbeddings(model_name='paraphrase-MiniLM-L6-v2')  # Updated to smaller model
     try:
         db = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
         print("✅ Vector database accessed successfully!")
@@ -48,20 +48,25 @@ Begin your response now.
 """
     return PromptTemplate(template=custom_prompt_template, input_variables=["context", "question"])
 
-# Load Hugging Face LLM
+# Global LLM instance for reuse
+llm_instance = None
+
 def load_llm():
-    HF_TOKEN = os.getenv("HF_TOKEN")
-    if not HF_TOKEN:
-        raise ValueError("❌ HF_TOKEN is not set in your environment.")
-    
-    print("✅ HF Token accessed successfully!")
-    return HuggingFaceEndpoint(
-        repo_id="mistralai/Mistral-7B-Instruct-v0.3",
-        temperature=0.6,
-        token=HF_TOKEN,
-        max_length=256,
-        do_sample=False
-    )
+    global llm_instance
+    if llm_instance is None:
+        HF_TOKEN = os.getenv("HF_TOKEN")
+        if not HF_TOKEN:
+            raise ValueError("❌ HF_TOKEN is not set in your environment.")
+
+        print("✅ HF Token accessed successfully!")
+        llm_instance = HuggingFaceEndpoint(
+            repo_id="mistralai/Mistral-7B-Instruct-v0.3",  # You can replace it with a more memory-efficient model
+            temperature=0.6,
+            token=HF_TOKEN,
+            max_length=256,
+            do_sample=False
+        )
+    return llm_instance
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -102,7 +107,7 @@ def index():
 
 if __name__ == "__main__":
     print("🚀 Starting the Chatbot Server...")
-    load_llm()  # Ensure HF Token is accessed before running
+    load_llm()  # Ensure LLM is loaded before running
     get_vectorstore()  # Ensure vector store is loaded before running
     print("✅ System initialized successfully! Running on port 5000.")
     
