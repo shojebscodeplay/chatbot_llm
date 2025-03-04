@@ -105,4 +105,7 @@ if __name__ == "__main__":
     load_llm()  # Ensure HF Token is accessed before running
     get_vectorstore()  # Ensure vector store is loaded before running
     print("✅ System initialized successfully! Running on port 5000.")
-    app.run(debug=True, port=5000)
+    
+    # For production environments, do not use app.run(). Instead use Gunicorn or other WSGI servers
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
