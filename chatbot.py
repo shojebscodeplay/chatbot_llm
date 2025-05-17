@@ -1,11 +1,20 @@
 import os
 import streamlit as st
-from langchain.embeddings import HuggingFaceEmbeddings
+import asyncio
+
+# Fix Streamlit event loop issue
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+from langchain_huggingface import HuggingFaceEmbeddings  # ✅ Updated
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFaceEndpoint
 from dotenv import load_dotenv, find_dotenv
+
 
 # Load environment variables
 load_dotenv(find_dotenv())
