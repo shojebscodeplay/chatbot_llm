@@ -1,11 +1,11 @@
-streamlit
+faiss-cpu
 flask
 flask-cors
-python-dotenv
-langchain
+gunicorn
+langchain>=0.1.14
 langchain-community
 langchain-core
 langchain-huggingface
-faiss-cpu
+python-dotenv
 sentence-transformers
-gunicorn
+streamlit
